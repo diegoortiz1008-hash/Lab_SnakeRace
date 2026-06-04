@@ -39,7 +39,7 @@ public final class SnakeRunner implements Runnable {
         if (autonomous) maybeTurn(); // solo la IA gira sola
         var res = board.step(snake);
         if (res == Board.MoveResult.HIT_OBSTACLE) {
-          if (autonomous) randomTurn();
+          randomTurn(); // siempre girar al chocar, sea jugador o IA
         } else if (res == Board.MoveResult.ATE_TURBO) {
           turboTicks = 100;
         }
