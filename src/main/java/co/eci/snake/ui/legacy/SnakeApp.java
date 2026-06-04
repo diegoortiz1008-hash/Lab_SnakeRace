@@ -45,7 +45,7 @@ public final class SnakeApp extends JFrame {
       snakes.add(Snake.of(x, y, dir));
     }
  
-    this.gamePanel    = new GamePanel(board, () -> snakes.stream().filter(Snake::isAlive).toList());
+    this.gamePanel    = new GamePanel(board, () -> snakes);
     this.actionButton = new JButton("Iniciar");
     this.statusLabel  = new JLabel(" ", SwingConstants.CENTER);
     statusLabel.setFont(new Font("Arial", Font.BOLD, 13));
@@ -253,13 +253,21 @@ public final class SnakeApp extends JFrame {
         g2.fillPolygon(xs, ys, xs.length);
       }
  
-      var snakes = snakesSupplier.get();
-      int idx = 0;
-      for (Snake s : snakes) {
+      // Paleta de colores — el índice original determina el color, no la posición en lista filtrada
+      Color[] palette = {
+          new Color(0, 170, 0),   new Color(0, 160, 180), new Color(180, 0, 180),
+          new Color(200, 140, 0), new Color(180, 0, 0),   new Color(0, 120, 60),
+          new Color(100, 0, 180), new Color(180, 100, 0), new Color(0, 80, 180),
+          new Color(160, 160, 0)
+      };
+      var allSnakes = snakesSupplier.get();
+      for (int idx = 0; idx < allSnakes.size(); idx++) {
+        Snake s = allSnakes.get(idx);
+        if (!s.isAlive()) continue; // solo dibujar vivas
+        Color base = palette[idx % palette.length];
         var body = s.snapshot().toArray(new Position[0]);
         for (int i = 0; i < body.length; i++) {
           var p = body[i];
-          Color base = (idx == 0) ? new Color(0, 170, 0) : new Color(0, 160, 180);
           int shade = Math.max(0, 40 - i * 4);
           g2.setColor(new Color(
               Math.min(255, base.getRed()   + shade),
@@ -267,7 +275,6 @@ public final class SnakeApp extends JFrame {
               Math.min(255, base.getBlue()  + shade)));
           g2.fillRect(p.x() * cell + 2, p.y() * cell + 2, cell - 4, cell - 4);
         }
-        idx++;
       }
       g2.dispose();
     }
