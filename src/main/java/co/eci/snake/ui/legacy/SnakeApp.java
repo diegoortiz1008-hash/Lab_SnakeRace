@@ -130,11 +130,16 @@ public final class SnakeApp extends JFrame {
 
   private void togglePause() {
     if ("Action".equals(actionButton.getText())) {
-      actionButton.setText("Resume");
-      clock.pause();
+        actionButton.setText("Resume");
+        clock.pause();
+        // Esperar que los runners terminen su step() en curso antes del repaint final
+        SwingUtilities.invokeLater(() -> {
+            try { Thread.sleep(100); } catch (InterruptedException ignored) {}
+            gamePanel.repaint();
+        });
     } else {
-      actionButton.setText("Action");
-      clock.resume();
+        actionButton.setText("Action");
+        clock.resume();
     }
   }
 
